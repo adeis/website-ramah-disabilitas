@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pelayanan Publik - Kelurahan Inklusi Mandiri</title>
+  
+  <style>
+    /* --------------------------------------------------
+       1. VARIABEL & DESAIN TOKENS (PRINSIP POUR - PERCEIVABLE)
+       Menjamin rasio kontras warna yang sangat tinggi (> 7:1 untuk AAA)
+       dan tipografi sans-serif yang mudah dibaca.
+       -------------------------------------------------- */
+    :root {
+      --color-bg-main: #f9fafb;
+      --color-text-main: #111827; /* Kontras sangat gelap terhadap putih */
+      --color-text-muted: #374151; /* Abu-abu gelap yang aman (> 7:1) */
+      --color-primary: #1e3a8a; /* Biru Navy Aksesibel */
+      --color-primary-hover: #111827;
+      --color-accent: #0f766e; /* Toska gelap untuk link/elemen interaktif */
+      --color-focus: #b45309; /* Warna kuning tua/amber tebal untuk indikator fokus keyboard */
+      --color-success: #065f46; /* Hijau sukses aksesibel */
+      --color-error: #991b1b; /* Merah galat aksesibel */
+      --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Reset Dasar */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--color-bg-main);
+      color: var(--color-text-main);
+      line-height: 1.6;
+      font-size: 1.1rem; /* Ukuran dasar 18px (relatif) agar mudah dibaca lansia/low vision */
+    }
+
+    /* --------------------------------------------------
+       2. SKIPLINK (PRINSIP POUR - OPERABLE)
+       Sangat penting untuk pengguna keyboard agar bisa melompati menu navigasi 
+       yang berulang langsung ke konten utama.
+       -------------------------------------------------- */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 10px;
+      background-color: var(--color-focus);
+      color: #ffffff;
+      padding: 12px 24px;
+      z-index: 100;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: 10px;
+      outline: 4px solid var(--color-text-main);
+    }
+
+    /* --------------------------------------------------
+       3. KEYBOARD FOCUS INDICATOR (PRINSIP POUR - OPERABLE)
+       Wajib menyediakan outline yang mencolok dan konsisten saat bernavigasi menggunakan Tab.
+       -------------------------------------------------- */
+    *:focus-visible {
+      outline: 4px dashed var(--color-focus);
+      outline-offset: 4px;
+    }
+
+    /* Layout Kontainer Utama */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header & Navigasi */
+    header {
+      background-color: #ffffff;
+      border-bottom: 3px solid var(--color-primary);
+      padding: 16px 24px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .logo-title span {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      font-weight: normal;
+    }
+
+    /* Navigasi Aksesibel */
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--color-primary-hover);
+      text-decoration: underline;
+    }
+
+    /* State Aktif yang tidak hanya mengandalkan warna */
+    nav a[aria-current="page"] {
+      border-bottom-color: var(--color-accent);
+      color: var(--color-text-main);
+      font-weight: 800;
+    }
+
+    /* Struktur Grid Konten Utama */
+    .main-grid {
+      max-width: 1200px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    @media (min-width: 900px) {
+      .main-grid {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+
+    /* Konten Artikel */
+    main {
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2, h3 {
+      color: var(--color-primary);
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 12px;
+    }
+
+    h1:focus {
+      outline: none; /* Menghilangkan outline fokus default setelah dipindahkan lewat JS */
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-top: 32px;
+      border-left: 5px solid var(--color-accent);
+      padding-left: 12px;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin-top: 20px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--color-text-muted);
+    }
+
+    /* Sesi Konten Tersembunyi (Akan ditampilkan secara SPA) */
+    .page-section {
+      display: none;
+    }
+
+    .page-section.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* --------------------------------------------------
+       4. STRUKTUR GAMBAR & ALT-TEXT (BAB 4.1)
+       Gambar edukasi inklusif dengan deskripsi alternatif yang informatif.
+       -------------------------------------------------- */
+    .image-card {
+      background-color: #f3f4f6;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 24px 0;
+      border: 1px solid #d1d5db;
+    }
+
+    .responsive-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .image-caption {
+      font-size: 0.95rem;
+      margin-top: 12px;
+      text-align: center;
+      font-style: italic;
+      color: var(--color-text-muted);
+    }
+
+    /* --------------------------------------------------
+       5. MULTIMEDIA AKSESIBEL (BAB 4.1)
+       Representasi video aksesibel dengan kontrol visual, transkrip terpadu, 
+       dan pintasan teks alternatif untuk teman tuli dan buta.
+       -------------------------------------------------- */
+    .media-box {
+      background-color: #111827;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .media-player-placeholder {
+      background-color: #1f2937;
+      border: 2px solid #4b5563;
+      border-radius: 6px;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .play-btn {
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      transition: background-color 0.2s;
+    }
+
+    .play-btn:hover {
+      background-color: #0d5c56;
+    }
+
+    .caption-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      text-align: center;
+      border: 1px solid #4b5563;
+      display: none; /* Muncul saat simulasi play diaktifkan */
+    }
+
+    .transcript-toggle {
+      background: none;
+      border: 1px solid #9ca3af;
+      color: #f3f4f6;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+
+    .transcript-toggle:hover {
+      background-color: #374151;
+      color: white;
+    }
+
+    .transcript-content {
+      background-color: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: 12px;
+      display: none;
+      font-size: 0.95rem;
+    }
+
+    /* --------------------------------------------------
+       6. LINK STRUKTUR (BAB 4.2)
+       Link harus deskriptif. Jika membuka tab baru, harus diinformasikan ke pembaca layar.
+       -------------------------------------------------- */
+    .link-list {
+      margin: 16px 0;
+      padding-left: 20px;
+    }
+
+    .link-list li {
+      margin-bottom: 8px;
+    }
+
+    .accessible-link {
+      color: var(--color-accent);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .accessible-link:hover {
+      color: var(--color-primary-hover);
+    }
+
+    /* Screen reader only helper class (Sangat krusial untuk aksesibilitas) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* --------------------------------------------------
+       7. FORMULIR AKSESIBEL & FIELDSET (BAB 4.2)
+       Setiap input wajib memiliki label yang terhubung secara eksplisit.
+       Pesan sukses atau galat wajib diumumkan melalui aria-live.
+       -------------------------------------------------- */
+    .form-section {
+      background-color: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--color-text-main);
+    }
+
+    .form-group .helper-text {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 1rem;
+      border: 2px solid #4b5563; /* Lebih tebal dari abu-abu standar agar kontras */
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: var(--color-text-main);
+    }
+
+    .form-control:focus {
+      border-color: var(--color-primary);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .checkbox-group input {
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+    }
+
+    .submit-btn {
+      background-color: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .submit-btn:hover {
+      background-color: var(--color-primary-hover);
+    }
+
+    /* Toast Alert Dialog (Ganti Alert Box Browser) */
+    .toast-alert {
+      background-color: var(--color-success);
+      color: white;
+      padding: 16px;
+      border-radius: 6px;
+      margin-top: 16px;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* Style Tambahan untuk Grouping Form (Fieldset & Legend) */
+    fieldset {
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #ffffff;
+    }
+
+    legend {
+      font-weight: bold;
+      padding: 0 10px;
+      color: var(--color-primary);
+      font-size: 1.15rem;
+    }
+
+    /* --------------------------------------------------
+       8. TABEL DATA AKSESIBEL (BAB 4.2 & AUDIT STRUKTUR)
+       Menggunakan standar aksesibilitas tabel W3C
+       -------------------------------------------------- */
+    .table-responsive {
+      overflow-x: auto;
+      margin: 24px 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    caption {
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 12px;
+      background-color: #f1f5f9;
+      color: var(--color-primary);
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    th {
+      background-color: #e2e8f0;
+      color: var(--color-text-main);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #cbd5e1;
+      color: var(--color-text-muted);
+    }
+
+    tr:hover {
+      background-color: #f8fafc;
+    }
+
+    /* --------------------------------------------------
+       9. KOMPONEN ACCORDION AKSESIBEL (BAB 4.2 - DINAMIS)
+       Mendukung kontrol keyboard penuh & atribut ARIA dinamis
+       -------------------------------------------------- */
+    .accordion-container {
+      margin: 24px 0;
+    }
+
+    .accordion-item {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      margin: 0;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background-color: #f8fafc;
+      border: none;
+      color: var(--color-primary);
+      font-weight: bold;
+      text-align: left;
+      padding: 16px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+
+    .accordion-trigger:hover, .accordion-trigger:focus {
+      background-color: #f1f5f9;
+    }
+
+    .accordion-icon {
+      font-size: 1.25rem;
+      transition: transform 0.2s;
+    }
+
+    .accordion-trigger[aria-expanded="true"] .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-panel {
+      padding: 16px;
+      background-color: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      display: none;
+    }
+
+    /* Sidebar Edukasi / Audit Companion */
+    aside {
+      background-color: #eff6ff;
+      border: 2px solid #bfdbfe;
+      padding: 24px;
+      border-radius: 8px;
+      height: fit-content;
+    }
+
+    .companion-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .companion-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e3a8a;
+      border-bottom: 2px solid #bfdbfe;
+      padding-bottom: 8px;
+    }
+
+    .feature-switch {
+      background-color: #ffffff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .switch-label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    /* Screen Reader Simulator Overlay Box */
+    .sr-simulator-box {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border: 3px solid #60a5fa;
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 16px;
+      z-index: 1000;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+
+    .sr-simulator-box h4 {
+      color: #60a5fa;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sr-simulator-text {
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #111827;
+      color: #f3f4f6;
+      padding: 32px 24px;
+      margin-top: auto;
+      text-align: center;
+      border-top: 4px solid var(--color-primary);
+    }
+
+    footer p {
+      color: #9ca3af;
+    }
+
+    /* Badge untuk Visualisasi Nomor Urutan Tab */
+    .tab-badge {
+      background-color: #b45309;
+      color: white;
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      border-radius: 50%;
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      font-weight: bold;
+      z-index: 50;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Link Lompat Navigasi (Sangat Direkomendasikan oleh WCAG) -->
+  <a href="#main-content" class="skip-link">Lompat langsung ke konten utama</a>
+
+  <div class="app-container">
+    
+    <!-- HEADER & NAVIGASI AKSESIBEL (LANDMARK: HEADER & NAV) -->
+    <header role="banner">
+      <div class="header-inner">
+        <div class="logo-area">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="color: var(--color-primary);" aria-hidden="true">
+            <path d="M12 2L2 22h20L12 2zm0 3.99L19.53 19H4.47L12 5.99zM13 16h-2v2h2v-2zm0-6h-2v4h2v-4z"/>
+          </svg>
+          <a href="#home" class="logo-title" aria-label="Portal Kelurahan Inklusi, kembali ke Beranda" onclick="navigateTo('home', event)">
+            KELURAHAN INKLUSI
+            <span>Portal Pelayanan Publik Ramah Disabilitas</span>
+          </a>
+        </div>
+        
+        <nav aria-label="Menu Navigasi Utama Website">
+          <ul id="nav-list">
+            <li><a href="#home" aria-current="page" data-page-link="home" onclick="navigateTo('home', event)" data-sr-say="Menu Beranda, Halaman Aktif">Beranda</a></li>
+            <li><a href="#layanan" data-page-link="layanan" onclick="navigateTo('layanan', event)" data-sr-say="Menu Layanan Kelurahan">Layanan</a></li>
+            <li><a href="#publikasi" data-page-link="publikasi" onclick="navigateTo('publikasi', event)" data-sr-say="Menu Publikasi dan Berita Terbaru">Publikasi</a></li>
+            <li><a href="#kontak" data-page-link="kontak" onclick="navigateTo('kontak', event)" data-sr-say="Menu Hubungi Kami">Kontak</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- CONTAINER GRID UTAMA -->
+    <div class="main-grid">
+      
+      <!-- KONTEN UTAMA (LANDMARK: MAIN) -->
+      <!-- Diperbarui dengan tabindex="-1" agar JS dapat mengalihkan fokus secara programatik -->
+      <main id="main-content" role="main" tabindex="-1">
+        
+        <!-- ========================================== -->
+        <!-- HALAMAN 1: BERANDA -->
+        <!-- ========================================== -->
+        <section id="page-home" class="page-section active" aria-labelledby="heading-home">
+          <article>
+            <header>
+              <h1 id="heading-home" tabindex="-1" data-sr-say="Judul Utama: Panduan Pelayanan Mandiri Kelurahan Inklusi">Panduan Pelayanan Mandiri Kelurahan Inklusi</h1>
+              <p style="font-size: 1.15rem; font-weight: 500;">
+                Selamat datang di portal percontohan aksesibilitas digital. Halaman ini dirancang murni mengikuti kriteria sukses <strong>WCAG 2.1 Level AA</strong> sebagai media praktik audit mandiri mahasiswa.
+              </p>
+            </header>
+
+            <!-- SESI 1: GAMBAR DENGAN ALT-TEXT YANG BENAR (BAB 4.1) -->
+            <section aria-labelledby="section-gambar">
+              <h2 id="section-gambar" data-sr-say="Judul Tingkat 2: Praktik 1, Aksesibilitas Gambar">1. Praktik Aksesibilitas Gambar (Teks Alternatif)</h2>
+              <p>
+                Elemen gambar tidak boleh mengecualikan pembaca layar. Di bawah ini adalah contoh penerapan gambar yang memiliki teks alternatif yang informatif, menjelaskan isi gambar secara lengkap tanpa sekadar menuliskan nama file.
+              </p>
+
+              <div class="image-card">
+                <svg viewBox="0 0 800 300" width="100%" height="100%" class="responsive-img" role="img" aria-labelledby="svg-title svg-desc" data-sr-say="Gambar Ilustrasi: Tiga orang petugas kelurahan yang sedang tersenyum ramah melayani seorang warga tunanetra menggunakan laptop dengan layar pembaca teks.">
+                  <title id="svg-title">Ilustrasi Pelayanan Inklusif Kelurahan</title>
+                  <desc id="svg-desc">Tiga orang petugas kelurahan yang sedang tersenyum ramah melayani seorang warga tunanetra menggunakan laptop dengan layar pembaca teks.</desc>
+                  <rect width="100%" height="100%" fill="#eff6ff" rx="6" />
+                  <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-weight="bold" font-size="24" fill="#1e3a8a">ILUSTRASI: PELAYANAN KELURAHAN INKLUSIF</text>
+                  <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-size="16" fill="#374151">Menunjukkan Petugas Kelurahan Menyambut Warga Disabilitas Netra dengan Hangat</text>
+                </svg>
+                <div class="image-caption" aria-hidden="true">
+                  Ilustrasi 1.1: Simulasi suasana pelayanan loket ramah disabilitas di kantor Kelurahan Inklusi Mandiri.
+                </div>
+              </div>
+              
+              <p>
+                Untuk mengevaluasi kepatuhan gambar ini di <strong>Bab 4.1</strong>, Anda dapat menggunakan tombol klik kanan -> <em>Inspect</em> untuk memverifikasi atribut <code>aria-labelledby</code>.
+              </p>
+            </section>
+
+            <!-- SESI 2: MULTIMEDIA VIDEO & CLOSED CAPTIONS / TRANSKRIP (BAB 4.1) -->
+            <section aria-labelledby="section-media">
+              <h2 id="section-media" data-sr-say="Judul Tingkat 2: Praktik 2, Aksesibilitas Multimedia">2. Praktik Kepatuhan Elemen Multimedia</h2>
+              <p>
+                Materi audio/video wajib menyertakan alternatif teks berupa teks takarir (closed caption) untuk tunarungu, serta transkrip mandiri. Di bawah ini adalah pemutar video simulasi mandiri.
+              </p>
+
+              <div class="media-box">
+                <h3 style="color: #60a5fa; margin-top: 0;" id="video-title">Video Panduan: Prosedur Pengurusan KTP-el Ramah Disabilitas</h3>
+                
+                <div class="media-player-placeholder">
+                  <button class="play-btn" id="sim-play" aria-label="Putar Video Panduan" data-sr-say="Tombol Putar Video Panduan Prosedur Pengurusan KTP elekronik">
+                    ▶
+                  </button>
+                  <p id="media-status" style="color: #9ca3af; font-size: 0.9rem;">Klik Putar untuk memulai simulasi pemutaran visual beserta takarir teks.</p>
+                  
+                  <!-- Overlay Takarir (Closed Captions) -->
+                  <div class="caption-overlay" id="video-caption-box" aria-live="polite">
+                    [Takarir Teks Akan Muncul di Sini saat Video Berjalan]
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                  <button class="transcript-toggle" id="toggle-transcript-btn" aria-expanded="false" aria-controls="transcript-area" data-sr-say="Tombol Tampilkan Transkrip Teks Video">
+                    Tampilkan Transkrip Video
+                  </button>
+                </div>
+
+                <div class="transcript-content" id="transcript-area" role="region" aria-label="Transkrip Video">
+                  <strong>Transkrip Audio Lengkap:</strong>
+                  <p style="margin-top: 8px; font-size: 0.95rem; color: #d1d5db;">
+                    "Halo, warga Kelurahan Inklusi Mandiri. Berikut adalah langkah mudah mengurus KTP Elektronik bagi penyandang disabilitas: Pertama, siapkan dokumen Kartu Keluarga. Kedua, petugas kami siap mengunjungi rumah Anda untuk melakukan perekaman biometrik jika Anda memiliki hambatan mobilitas fisik. Layanan ini sepenuhnya gratis dan ramah aksesibilitas."
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- SESI 3: STRUKTUR LINK YANG DESKRIPTIF (BAB 4.2) -->
+            <section aria-labelledby="section-link">
+              <h2 id="section-link" data-sr-say="Judul Tingkat 2: Praktik 3, Evaluasi Struktur Tautan">3. Evaluasi Struktur Link (Tautan)</h2>
+              <p>
+                Hindari menulis nama link yang membingungkan seperti "Klik di Sini" or "Selengkapnya". Tautan harus mendeskripsikan secara jelas tujuannya.
+              </p>
+              
+              <p>Perhatikan contoh daftar tautan dokumen kelurahan yang ramah pembaca layar berikut:</p>
+              <ul class="link-list">
+                <li>
+                  <a href="#download" class="accessible-link" data-sr-say="Tautan unduh Formulir Pengajuan Bantuan Sosial Kelurahan format PDF, ukuran file 1,2 megabyte">
+                    Unduh Formulir Pengajuan Bantuan Sosial Kelurahan (PDF, 1.2 MB)
+                  </a>
+                </li>
+                <li>
+                  <a href="https://example.com/uu-disabilitas" class="accessible-link" target="_blank" data-sr-say="Tautan luar menuju Undang Undang Nomor 8 Tahun 2016 tentang Penyandang Disabilitas, membuka tab baru">
+                    Undang-Undang Nomor 8 Tahun 2016 tentang Penyandang Disabilitas <span class="sr-only">(membuka jendela baru)</span>
+                  </a>
+                </li>
+              </ul>
+            </section>
+          </article>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- HALAMAN 2: LAYANAN -->
+        <!-- ========================================== -->
+        <section id="page-layanan" class="page-section" aria-labelledby="heading-layanan">
+          <article>
+            <header>
+              <h1 id="heading-layanan" tabindex="-1" data-sr-say="Judul Utama: Layanan Publik Inklusif Kelurahan">Layanan Publik Inklusif Kelurahan</h1>
+              <p>
+                Kami menyediakan layanan administrasi sipil dan perlindungan sosial yang ramah dan siap membantu kebutuhan seluruh warga, termasuk layanan jemput bola di rumah bagi penyandang disabilitas berat.
+              </p>
+            </header>
+
+            <!-- SESI AUDIT FORM KOMPLEKS DENGAN FIELDSET & LEGEND (BAB 4.2) -->
+            <section aria-labelledby="section-form-layanan">
+              <h2 id="section-form-layanan" data-sr-say="Judul Tingkat 2: Pengajuan Layanan Jemput Bola di Rumah">Formulir Permohonan Layanan Sipil di Rumah</h2>
+              <p>
+                Bagi warga disabilitas fisik berat, lansia, atau sakit yang kesulitan untuk hadir langsung di kantor kelurahan, silakan isi formulir pengajuan di bawah ini. Tim kami akan datang langsung ke alamat rumah Anda.
+              </p>
+
+              <div class="form-section">
+                <form id="serviceRequestForm" novalidate onsubmit="handleServiceSubmit(event)">
+                  
+                  <!-- Group 1: Informasi Pemohon -->
+                  <fieldset>
+                    <legend>Identitas Pemohon</legend>
+                    
+                    <div class="form-group">
+                      <label for="applicantName">Nama Lengkap Pemohon (Wajib):</label>
+                      <input type="text" id="applicantName" class="form-control" required placeholder="Contoh: Siti Aminah" data-sr-say="Masukan nama lengkap pemohon">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="applicantPhone">Nomor WhatsApp Aktif (Wajib):</label>
+                      <span class="helper-text" id="phone-desc">Digunakan oleh petugas kami untuk konfirmasi jadwal kedatangan.</span>
+                      <input type="tel" id="applicantPhone" class="form-control" required aria-describedby="phone-desc" placeholder="Contoh: 08123456789" data-sr-say="Masukan nomor WhatsApp aktif pemohon">
+                    </div>
+                  </fieldset>
+
+                  <!-- Group 2: Detail Kebutuhan Khusus (Praktik Evaluasi Grouping Radio/Checkbox) -->
+                  <fieldset>
+                    <legend>Jenis Layanan & Hambatan yang Dihadapi</legend>
+                    
+                    <div class="form-group">
+                      <label for="requestedService">Layanan yang Diperlukan:</label>
+                      <select id="requestedService" class="form-control" data-sr-say="Pilih jenis layanan administrasi yang dibutuhkan">
+                        <option value="ktp">Perekaman Sidik Jari/Foto KTP-el</option>
+                        <option value="kk">Pembaruan Kartu Keluarga (KK)</option>
+                        <option value="kia">Kartu Identitas Anak (KIA) Ramah Disabilitas</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="disabilityDetail">Hambatan atau Kondisi Fisik (Opsional):</label>
+                      <span class="helper-text" id="disability-desc">Membantu petugas kami menyiapkan alat bantu yang sesuai (misal kursi roda portable).</span>
+                      <textarea id="disabilityDetail" class="form-control" rows="2" aria-describedby="disability-desc" placeholder="Contoh: Menggunakan kursi roda, tremor tangan, dll." data-sr-say="Masukan detail hambatan fisik pemohon"></textarea>
+                    </div>
+                  </fieldset>
+
+                  <!-- Feedback Alert Dialog -->
+                  <div id="serviceFormFeedback" class="toast-alert" role="status" aria-live="polite"></div>
+
+                  <button type="submit" class="submit-btn" style="margin-top: 12px;" data-sr-say="Tombol Kirim Permohonan Layanan Jemput Bola">
+                    Kirim Pengajuan Layanan
+                  </button>
+                </form>
+              </div>
+            </section>
+          </article>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- HALAMAN 3: PUBLIKASI -->
+        <!-- ========================================== -->
+        <section id="page-publikasi" class="page-section" aria-labelledby="heading-publikasi">
+          <article>
+            <header>
+              <h1 id="heading-publikasi" tabindex="-1" data-sr-say="Judul Utama: Publikasi Informasi dan Transparansi Kelurahan">Publikasi dan Transparansi Anggaran</h1>
+              <p>
+                Sebagai perwujudan transparansi publik, Kelurahan Inklusi Mandiri merilis laporan realisasi anggaran pembinaan dan pemberdayaan masyarakat inklusif secara berkala.
+              </p>
+            </header>
+
+            <!-- TABEL AKSESIBEL (PRINSIP POUR - PERCEIVABLE) -->
+            <!-- Mahasiswa dapat mengevaluasi kepatuhan tabel ini berdasarkan standar WCAG 1.3.1 -->
+            <section aria-labelledby="section-tabel">
+              <h2 id="section-tabel" data-sr-say="Judul Tingkat 2: Tabel Laporan Alokasi Anggaran Aksesibilitas">Tabel Alokasi Anggaran Program Aksesibilitas Tahun 2026</h2>
+              <p>
+                Berikut adalah data anggaran kegiatan pemberdayaan dan pembangunan fasilitas fisik ramah disabilitas di lingkungan kelurahan:
+              </p>
+
+              <div class="table-responsive">
+                <table>
+                  <caption>Laporan Anggaran Program Ramah Disabilitas Kelurahan 2026</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">No</th>
+                      <th scope="col">Nama Program / Kegiatan</th>
+                      <th scope="col">Target Sasaran</th>
+                      <th scope="col">Total Anggaran (Rp)</th>
+                      <th scope="col">Status Realisasi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <th scope="row">Pembangunan Jalur Pemandu (Guiding Block) Trotoar</th>
+                      <td>Disabilitas Netra</td>
+                      <td>45.000.000</td>
+                      <td>Selesai 100%</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <th scope="row">Pelatihan Aksesibilitas Digital bagi Perangkat Desa</th>
+                      <td>Staf Pelayanan</td>
+                      <td>12.500.000</td>
+                      <td>Selesai 100%</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <th scope="row">Pengadaan Kursi Roda Adaptif di Aula Kelurahan</th>
+                      <td>Disabilitas Fisik</td>
+                      <td>8.000.000</td>
+                      <td>Dalam Proses</td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <th scope="row">Penyediaan Juru Bahasa Isyarat di Loket Publik</th>
+                      <td>Disabilitas Rungu</td>
+                      <td>15.000.000</td>
+                      <td>Rencana Kerja</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 16px;">
+                <p style="margin-bottom: 0; font-size: 0.95rem;">
+                  <strong>Petunjuk Evaluasi Praktik (Bab 4.2):</strong> Perhatikan bahwa judul baris data menggunakan tag <code>&lt;th scope="row"&gt;</code>, bukan <code>&lt;td&gt;</code> biasa. Hal ini memastikan pembaca layar dapat membacakan konteks baris dengan benar kepada pengguna tunanetra saat mereka menyusuri kolom anggaran secara horizontal.
+                </p>
+              </div>
+            </section>
+          </article>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- HALAMAN 4: KONTAK -->
+        <!-- ========================================== -->
+        <section id="page-kontak" class="page-section" aria-labelledby="heading-kontak">
+          <article>
+            <header>
+              <h1 id="heading-kontak" tabindex="-1" data-sr-say="Judul Utama: Hubungi Kami, Kelurahan Inklusi Mandiri">Hubungi Kami dan Pertanyaan Umum</h1>
+              <p>
+                Ada pertanyaan atau memerlukan bantuan khusus? Tim layanan inklusif kami siap memberikan tanggapan cepat untuk Anda.
+              </p>
+            </header>
+
+            <!-- DETIL KONTAK DENGAN ARIA LANDMARK & INFORMASI YANG JELAS -->
+            <section aria-labelledby="info-kontak">
+              <h2 id="info-kontak" data-sr-say="Judul Tingkat 2: Informasi Kantor dan Layanan">Alamat Kantor Kelurahan</h2>
+              <p>
+                <strong>Alamat Fisik:</strong> Jl. Inklusivitas No. 12, Kecamatan Kesetaraan, Kota Ramah Disabilitas, Sumatera Utara.<br>
+                <strong>Telepon Layanan Disabilitas:</strong> (021) 888-2026<br>
+                <strong>Email Layanan Publik:</strong> inklusi@kelurahan-mandiri.go.id
+              </p>
+
+              <!-- ACCORDION FAQ AKSESIBEL (PRINSIP OPERABLE - KEYBOARD INTERACTIVE & ARIA-EXPANDED) -->
+              <h3 style="margin-top: 32px;" id="faq-title">Pertanyaan yang Sering Diajukan (FAQ)</h3>
+              <p>Klik pertanyaan untuk membuka jawaban. Fitur ini dirancang responsif terhadap navigasi keyboard (Gunakan Tab untuk berpindah, dan Enter/Spasi untuk membuka).</p>
+
+              <div class="accordion-container" id="faqAccordion">
+                
+                <!-- FAQ Item 1 -->
+                <div class="accordion-item">
+                  <h4 class="accordion-header">
+                    <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-panel-1" id="faq-trig-1">
+                      <span>Apakah ada jalur kursi roda (ramp) di pintu masuk utama Kelurahan?</span>
+                      <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </button>
+                  </h4>
+                  <div class="accordion-panel" id="faq-panel-1" role="region" aria-labelledby="faq-trig-1">
+                    <p style="margin: 0;">
+                      Ya. Di halaman masuk utama kami telah terpasang ramp landai dengan kemiringan 8 derajat yang memenuhi standar keselamatan nasional dan memiliki pegangan tangan (handrail) yang kokoh.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="accordion-item">
+                  <h4 class="accordion-header">
+                    <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-panel-2" id="faq-trig-2">
+                      <span>Bagaimana teman tuli dapat mengakses pelayanan di loket langsung?</span>
+                      <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </button>
+                  </h4>
+                  <div class="accordion-panel" id="faq-panel-2" role="region" aria-labelledby="faq-trig-2">
+                    <p style="margin: 0;">
+                      Kami menyediakan tablet pelayanan khusus di loket yang terhubung langsung dengan Juru Bahasa Isyarat (JBI) secara video-call interaktif, atau staf kami siap berkomunikasi tertulis melalui media digital yang disediakan.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="accordion-item">
+                  <h4 class="accordion-header">
+                    <button class="accordion-trigger" aria-expanded="false" aria-controls="faq-panel-3" id="faq-trig-3">
+                      <span>Bagaimana cara mengadukan kendala aksesibilitas fisik di wilayah kelurahan?</span>
+                      <span class="accordion-icon" aria-hidden="true">▼</span>
+                    </button>
+                  </h4>
+                  <div class="accordion-panel" id="faq-panel-3" role="region" aria-labelledby="faq-trig-3">
+                    <p style="margin: 0;">
+                      Anda dapat mengisi Formulir Aspirasi Pengaduan yang tersedia di halaman Beranda website ini, atau menghubungi kami langsung melalui nomor WhatsApp khusus layanan disabilitas kelurahan.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+          </article>
+        </section>
+
+      </main>
+
+      <!-- SIDEBAR EDUKASI / AUDIT COMPANION (LANDMARK: COMPLEMENTARY) -->
+      <aside role="complementary" aria-label="Alat Bantu Edukasi Evaluasi Mandiri">
+        <div class="companion-panel">
+          <h2 class="companion-title">Companion Audit (Bab 4)</h2>
+          <p style="font-size: 0.95rem; margin-bottom: 8px;">
+            Gunakan modul simulasi ini untuk memvisualisasikan bagaimana alat evaluasi pembaca layar mengidentifikasi elemen-elemen di samping kiri.
+          </p>
+
+          <!-- Switch Simulator Pembaca Layar -->
+          <div class="feature-switch">
+            <label class="switch-label" for="switchScreenReader">
+              <input type="checkbox" id="switchScreenReader" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 6px;">
+              Aktifkan Simulasi Suara (Screen Reader)
+            </label>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+              Arahkan pointer mouse atau gunakan navigasi keyboard (tombol Tab) ke arah elemen di samping untuk melihat "apa yang akan dibacakan" oleh NVDA/JAWS.
+            </p>
+          </div>
+
+          <!-- Switch Visualisasi Urutan Tab Keyboard -->
+          <div class="feature-switch">
+            <label class="switch-label" for="switchTabVisualizer">
+              <input type="checkbox" id="switchTabVisualizer" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 6px;">
+              Visualisasikan Alur Tab Keyboard
+            </label>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+              Menampilkan urutan pergerakan kursor navigasi keyboard saat Anda menekan tombol Tab secara berturut-turut pada website ini.
+            </p>
+          </div>
+
+          <div style="background-color: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #bfdbfe;">
+            <strong style="display: block; font-size: 0.9rem; color: var(--color-primary); margin-bottom: 4px;">Evaluasi Kinerja (Bab 4.3):</strong>
+            <p style="font-size: 0.85rem; margin-bottom: 0;">
+              Website contoh ini dirancang untuk lolos skor <strong>100/100 pada Google Lighthouse Accessibility</strong>. Gunakan DevTools Anda (F12) -> Lighthouse untuk membuktikannya!
+            </p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- BOX SIMULATOR SCREEN READER (LIVE REGION) -->
+    <div class="sr-simulator-box" id="srBox" role="region" aria-live="assertive">
+      <h4>Simulasi Pembaca Layar (Voice Synthesis):</h4>
+      <div class="sr-simulator-text" id="srText">Arahkan kursor atau fokus pada elemen konten...</div>
+    </div>
+
+    <!-- FOOTER WEBSITE (LANDMARK: CONTENTINFO) -->
+    <footer role="contentinfo">
+      <p>&copy; 2026 Pemerintah Kelurahan Inklusi Mandiri. Seluruh hak cipta dilindungi undang-undang.</p>
+      <p style="font-size: 0.9rem; margin-top: 8px;">
+        Dirancang khusus sebagai media praktik pembelajaran dalam buku <em>"Aksesibilitas Digital: Panduan Pengenalan dan Praktik Evaluasi Konten Web Ramah Disabilitas"</em>.
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC UNTUK INTERAKTIVITAS DAN SIMULATOR EVALUASI -->
+  <script>
+    /* --------------------------------------------------
+       0. SPA CLIENT-SIDE NAVIGATION (FOKUS & ACCESSIBILITY-AWARE)
+       Menjamin perubahan halaman diumumkan oleh screen reader secara eksplisit
+       -------------------------------------------------- */
+    function navigateTo(pageId, event) {
+      if (event) {
+        event.preventDefault(); // Mencegah reload halaman
+      }
+
+      // 1. Matikan semua seksi halaman
+      const sections = document.querySelectorAll('.page-section');
+      sections.forEach(sec => sec.classList.remove('active'));
+
+      // 2. Aktifkan seksi halaman yang dituju
+      const activeSection = document.getElementById(`page-${pageId}`);
+      if (activeSection) {
+        activeSection.classList.add('active');
+      }
+
+      // 3. Perbarui Atribut Navigasi (aria-current="page" dipindahkan)
+      const navLinks = document.querySelectorAll('[data-page-link]');
+      navLinks.forEach(link => {
+        if (link.getAttribute('data-page-link') === pageId) {
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+
+      // 4. Focus Management (Manajemen Fokus): Kirim fokus ke h1 halaman baru
+      // Ini sangat krusial bagi aksesibilitas agar screen reader langsung bersuara judul halaman baru.
+      const heading = document.getElementById(`heading-${pageId}`);
+      if (heading) {
+        heading.setAttribute('tabindex', '-1');
+        heading.focus();
+
+        // Umumkan secara simulasi jika screen reader companion aktif
+        if (document.getElementById('switchScreenReader').checked) {
+          triggerSRVoice(heading);
+        }
+      }
+
+      // 5. Update alur badge jika Tab Visualizer aktif
+      if (document.getElementById('switchTabVisualizer').checked) {
+        // Matikan lalu hidupkan kembali untuk memicu update letak badge di halaman baru
+        document.getElementById('switchTabVisualizer').checked = false;
+        document.getElementById('switchTabVisualizer').click();
+      }
+    }
+
+    // Tangani navigasi jika user menekan back/forward browser atau mengakses via hash URL langsung
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '') || 'home';
+      navigateTo(hash);
+    });
+
+    // Jalankan inisialisasi awal halaman
+    window.addEventListener('DOMContentLoaded', () => {
+      const initialHash = window.location.hash.replace('#', '') || 'home';
+      navigateTo(initialHash);
+    });
+
+
+    /* --------------------------------------------------
+       A. LOGIK SIMULASI MULTIMEDIA VIDEO AKSESIBEL (CC & TRANSKRIP)
+       -------------------------------------------------- */
+    const playBtn = document.getElementById('sim-play');
+    const ccBox = document.getElementById('video-caption-box');
+    const mediaStatus = document.getElementById('media-status');
+    const transcriptBtn = document.getElementById('toggle-transcript-btn');
+    const transcriptArea = document.getElementById('transcript-area');
+    
+    let isPlaying = false;
+    let captionInterval;
+
+    const captionsData = [
+      { time: 1, text: "[Musik Pengantar Bersemangat Melodi Tenang]" },
+      { time: 4, text: "Narator: \"Halo warga Kelurahan Inklusi Mandiri.\"" },
+      { time: 8, text: "Narator: \"Berikut adalah langkah mudah mengurus KTP Elektronik bagi disabilitas.\"" },
+      { time: 13, text: "Narator: \"Pertama, silakan persiapkan Kartu Keluarga Anda.\"" },
+      { time: 17, text: "Narator: \"Kedua, petugas kami siap mendatangi kediaman Anda untuk perekaman biometrik.\"" },
+      { time: 22, text: "Narator: \"Semua layanan kelurahan ramah aksesibilitas dan gratis!\"" },
+      { time: 26, text: "[Video Selesai - Layar Menampilkan Nomor Kontak Kelurahan]" }
+    ];
+
+    playBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        isPlaying = true;
+        playBtn.innerHTML = '⏸';
+        playBtn.setAttribute('aria-label', 'Jeda Video Panduan');
+        mediaStatus.innerText = "Simulasi Video Sedang Berjalan...";
+        ccBox.style.display = 'block';
+        
+        let elapsed = 0;
+        updateCaption(elapsed);
+
+        captionInterval = setInterval(() => {
+          elapsed++;
+          updateCaption(elapsed);
+          if (elapsed >= 28) {
+            resetVideoSim();
+          }
+        }, 1000);
+      } else {
+        resetVideoSim();
+      }
+    });
+
+    function updateCaption(seconds) {
+      const currentCaption = captionsData.find(c => seconds >= c.time && seconds < c.time + 4);
+      if (currentCaption) {
+        ccBox.innerText = currentCaption.text;
+      }
+    }
+
+    function resetVideoSim() {
+      isPlaying = false;
+      clearInterval(captionInterval);
+      playBtn.innerHTML = '▶';
+      playBtn.setAttribute('aria-label', 'Putar Video Panduan');
+      mediaStatus.innerText = "Simulasi dihentikan. Klik kembali untuk memutar dari awal.";
+      ccBox.style.display = 'none';
+    }
+
+    transcriptBtn.addEventListener('click', () => {
+      const isExpanded = transcriptBtn.getAttribute('aria-expanded') === 'true';
+      transcriptBtn.setAttribute('aria-expanded', !isExpanded);
+      
+      if (!isExpanded) {
+        transcriptArea.style.display = 'block';
+        transcriptBtn.innerText = "Sembunyikan Transkrip Video";
+      } else {
+        transcriptArea.style.display = 'none';
+        transcriptBtn.innerText = "Tampilkan Transkrip Video";
+      }
+    });
+
+
+    /* --------------------------------------------------
+       B. LOGIK VALIDASI FORMULIR BERANDA & LAYANAN JEMPUT BOLA
+       -------------------------------------------------- */
+    function handleServiceSubmit(e) {
+      e.preventDefault();
+      const feedback = document.getElementById('serviceFormFeedback');
+      const name = document.getElementById('applicantName').value.trim();
+      const phone = document.getElementById('applicantPhone').value.trim();
+      const service = document.getElementById('requestedService').value;
+
+      feedback.style.display = 'none';
+      feedback.style.backgroundColor = 'var(--color-success)';
+
+      if (!name || !phone) {
+        feedback.style.backgroundColor = 'var(--color-error)';
+        feedback.innerText = "Galat: Isian Nama Lengkap dan Nomor WhatsApp wajib diisi sebelum mengirim permohonan!";
+        feedback.style.display = 'block';
+        feedback.focus();
+        return;
+      }
+
+      feedback.innerText = `Sukses: Permohonan untuk ${name} telah kami terima. Jadwal kunjungan rumah akan dikonfirmasi via WhatsApp ke ${phone}.`;
+      feedback.style.display = 'block';
+      document.getElementById('serviceRequestForm').reset();
+    }
+
+
+    /* --------------------------------------------------
+       C. LOGIK AKORDION KONTAK (FAQ) (PRINSIP OPERABLE - KEYBOARD INTERACTIVE)
+       -------------------------------------------------- */
+    const triggers = document.querySelectorAll('.accordion-trigger');
+
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        const panelId = trigger.getAttribute('aria-controls');
+        const panel = document.getElementById(panelId);
+
+        // Tutup semua akordion yang lain untuk kemudahan navigasi
+        triggers.forEach(t => {
+          t.setAttribute('aria-expanded', 'false');
+          document.getElementById(t.getAttribute('aria-controls')).style.display = 'none';
+        });
+
+        // Toggle state saat ini
+        if (!isExpanded) {
+          trigger.setAttribute('aria-expanded', 'true');
+          panel.style.display = 'block';
+          
+          if (document.getElementById('switchScreenReader').checked) {
+            triggerSRVoice(panel);
+          }
+        } else {
+          trigger.setAttribute('aria-expanded', 'false');
+          panel.style.display = 'none';
+        }
+      });
+    });
+
+
+    /* --------------------------------------------------
+       D. KARTU EDUKASI: SIMULATOR PEMBACA LAYAR (ASIDE TOOL)
+       -------------------------------------------------- */
+    const switchSR = document.getElementById('switchScreenReader');
+    const srBox = document.getElementById('srBox');
+    const srText = document.getElementById('srText');
+    let activeAuditElement = null; // Menyimpan satu-satunya elemen aktif yang di-highlight saat ini
+
+    // Fungsi bersih untuk menghapus highlight lama secara tuntas
+    function clearActiveHighlight() {
+      if (activeAuditElement) {
+        activeAuditElement.style.boxShadow = "";
+        activeAuditElement = null;
+      }
+    }
+
+    // Gunakan event delegation untuk melacak interaksi elemen secara presisi
+    document.body.addEventListener('focus', (e) => {
+      if (switchSR.checked) {
+        const element = e.target.closest('[data-sr-say], input, select, textarea, button, a, h1, h2, h3, th');
+        if (element) {
+          handleElementAuditTrace(element);
+        }
+      }
+    }, true);
+
+    document.body.addEventListener('blur', (e) => {
+      if (switchSR.checked) {
+        clearActiveHighlight();
+      }
+    }, true);
+
+    document.body.addEventListener('mouseover', (e) => {
+      if (switchSR.checked) {
+        // Melacak elemen terdekat yang bermakna
+        const element = e.target.closest('[data-sr-say], input, select, textarea, button, a, h1, h2, h3, th');
+        if (element) {
+          handleElementAuditTrace(element);
+        }
+      }
+    }, true);
+
+    document.body.addEventListener('mouseout', (e) => {
+      if (switchSR.checked && activeAuditElement) {
+        const related = e.relatedTarget;
+        // Hanya hapus jika mouse benar-benar meninggalkan area terluar elemen target
+        if (!related || !activeAuditElement.contains(related)) {
+          clearActiveHighlight();
+        }
+      }
+    }, true);
+
+    function handleElementAuditTrace(element) {
+      // Cegah pemicuan beruntun/berulang jika kursor hanya bergeser sedikit di dalam elemen yang sama
+      if (activeAuditElement === element) return;
+      triggerSRVoice(element);
+    }
+
+    function triggerSRVoice(el) {
+      // Bersihkan sisa highlight sebelumnya agar tidak terjadi penumpukan visual
+      if (activeAuditElement && activeAuditElement !== el) {
+        clearActiveHighlight();
+      }
+
+      srBox.style.display = 'block';
+      let textToSay = "";
+
+      if (el.getAttribute('data-sr-say')) {
+        textToSay = el.getAttribute('data-sr-say');
+      } else if (el.tagName === 'INPUT' && el.type === 'text') {
+        const label = document.querySelector(`label[for="${el.id}"]`)?.innerText || "Input Teks";
+        textToSay = `${label}. Kolom teks, silakan ketikkan di sini.`;
+      } else if (el.tagName === 'A') {
+        textToSay = `Tautan: ${el.innerText}.`;
+      } else if (el.tagName === 'BUTTON') {
+        textToSay = `Tombol: ${el.innerText}. Tekan Spasi atau Enter untuk mengaktifkan.`;
+      } else if (el.tagName === 'TH' && el.getAttribute('scope') === 'row') {
+        textToSay = `Judul Baris Tabel: ${el.innerText}.`;
+      } else {
+        textToSay = el.innerText || el.placeholder || "Elemen Konten Kelurahan";
+      }
+
+      srText.innerText = `"${textToSay}"`;
+      
+      activeAuditElement = el;
+      el.style.boxShadow = "0 0 12px var(--color-focus)";
+    }
+
+    switchSR.addEventListener('change', () => {
+      if (!switchSR.checked) {
+        srBox.style.display = 'none';
+        clearActiveHighlight();
+      } else {
+        srBox.style.display = 'block';
+        srText.innerText = "Aktivasi Berhasil! Silakan arahkan mouse atau gunakan Tab keyboard pada konten.";
+      }
+    });
+
+
+    /* --------------------------------------------------
+       E. KARTU EDUKASI: VISUALISASI ALUR TAB KEYBOARD
+       -------------------------------------------------- */
+    const switchTab = document.getElementById('switchTabVisualizer');
+    const interactiveSelectors = 'a, button, input, select, textarea, [tabindex="0"]';
+    
+    switchTab.addEventListener('change', () => {
+      // Hanya lacak elemen interaktif yang saat ini terlihat (display != none)
+      const allInteractive = Array.from(document.querySelectorAll(interactiveSelectors)).filter(el => {
+        return el.offsetWidth > 0 && el.offsetHeight > 0;
+      });
+      
+      allInteractive.forEach((el, index) => {
+        if (el.classList.contains('skip-link') || el.closest('aside')) return;
+
+        let badge = el.querySelector('.tab-badge');
+        
+        if (switchTab.checked) {
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'tab-badge';
+            el.style.position = 'relative';
+            el.appendChild(badge);
+          }
+          badge.innerText = index - 1; // Sesuaikan index visual setelah skip-link diabaikan
+          badge.style.display = 'inline-block';
+        } else {
+          if (badge) {
+            badge.style.display = 'none';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
